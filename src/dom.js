@@ -30,7 +30,7 @@
  *
  * DOM helper functions
  *
- * @package	  jlib
+ * @package	  eightval 
  * @version	  0.1 
  * @copyright Frengstad Web Teknologi	
  * @author	  Olav Frengstad <olav@fwt.no>
