@@ -31,7 +31,7 @@
  * Form validation
  *
  * @package	  eightval 
- * @version	  0.1 
+ * @version	  0.2
  * @copyright Frengstad Web Teknologi	
  * @author	  Olav Frengstad <olav@fwt.no>
  * @license	  http://www.opensource.org/licenses/bsd-license.php BSD License
@@ -50,6 +50,8 @@ if ( typeof (Fwt.form) == "undefined" ) {
 		FIELD_STATUS_OK    : 2,
 		FIELD_STATUS_NONE  : 4,
 		FIELD_STATUS_INIT  : 6,
+
+		htmlform           : null,
 		
 		/**
 		 * Validate form
@@ -58,12 +60,28 @@ if ( typeof (Fwt.form) == "undefined" ) {
 		 * @param dom The dom helper utils
 		 */
 		validate           : function ( form, dom ) {
+			this.htmlform = form;
 			var fields = form.getElementsByTagName( 'input' );
 			
 			for ( var i = 0; i < fields.length; i++ ) {
-				if ( fields[i].type == 'text' && dom.hasClass( fields[i], 'validate' ) ) {
-//					//	Validate text field
-					var field = dom.hasClass(fields[i], 'email') ? new Fwt.form.EmailTextField(fields[i]) : new Fwt.form.TextField(fields[i]);
+				if ( (fields[i].type == 'password' || fields[i].type == 'text') && dom.hasClass( fields[i], 'validate' ) ) {
+					//	Validate text field
+					var field = "";
+
+					switch (true) {
+						case dom.hasClass(fields[i], 'email'):
+							field = new Fwt.form.EmailTextField(fields[i]);
+							break;
+						case dom.hasClass(fields[i], 'password'):
+							field = new Fwt.form.PasswordField(fields[i]);
+							break;
+						case dom.hasClass(fields[i], 'confirm-password'):
+							field = new Fwt.form.PasswordConfirmationField(fields[i]);
+							break;
+						default:
+							field = new Fwt.form.TextField(fields[i]);
+							break;
+					}
 					
 					if ( dom.hasClass( fields[i], 'required' ) ) {
 						this.required = true;
@@ -317,6 +335,42 @@ Fwt.form.EmailTextField = function ( field ) {
 }
 
 Fwt.form.EmailTextField.prototype = new Fwt.form.TextField();
+
+Fwt.form.PasswordField = function ( field ) {
+	this.field    = field;
+	this.regex    = /.{6,}/;
+	this.msgError = "Password must atleast be 6 characters";
+	this.msgEmpty = "You need to enter a password";
+}
+
+Fwt.form.PasswordField.prototype = new Fwt.form.TextField();
+
+
+Fwt.form.PasswordConfirmationField = function ( field ) {
+	this.field    = field;
+	this.msgError = "Passwords did not match";
+	this.msgEmpty = "You need to confirm your password";
+	this.sibling  = document.getElementById('password');
+
+	this.validate = function () {
+		if ( this.field.value ) {
+			if ( this.sibling.value == this.field.value ) {
+				this.setState(Fwt.form.FIELD_STATUS_OK);
+			} else {
+				this.setState(Fwt.form.FIELD_STATUS_ERROR);
+				return false;
+			}
+			
+			return true;
+		} else {
+			this.setState( Fwt.form.FIELD_STATUS_EMPTY );
+		}
+		
+		return false;
+	}
+}
+
+Fwt.form.PasswordConfirmationField.prototype = new Fwt.form.AbstractField();
 
 //	Automatically load if there are any forms on page
 if ( Fwt.dom != "undefined" ) {
