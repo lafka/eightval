@@ -87,20 +87,51 @@ Fwt.dom = function () {
 		
 		return false;
 	};
-	
+
 	/**
 	 * Add an event listener to an object
+	 * 
+	 * All attributions to Scott Andre LePera for this.
+	 * http://www.scottandrew.com/weblog/articles/cbs-events
 	 * 
 	 * @param element The element to check
 	 * @param event The event to handler
 	 * @param handler The function to that handles the event
-	 * @return void
+	 * @param useCapture 
+	 * @return boolean Status of event addition
 	 */
-	this.addEvent = function ( element, event, handler ) {
-		if ( element.attachEvent ) {	// Old browsers
-			element.attachEvent('on' + event, handler );
-		} else if ( element.addEventListener ) {
-			element.addEventListener(event, handler, true);
-		}
+	this.addEvent = function ( obj, evType, fn, useCapture) {
+	  if (obj.addEventListener){
+	    obj.addEventListener(evType, fn, useCapture);
+	    return true;
+	  } else if (obj.attachEvent){
+	    var r = obj.attachEvent("on"+evType, fn);
+	    return r;
+	  } else {
+	    return false;
+	  }
 	};
+
+	/**
+	 *
+	 * All attributions to Scott Andre LePera for this.
+	 * http://www.scottandrew.com/weblog/articles/cbs-events
+	 *
+	 * @param obj The element to check
+	 * @param evType The event to remove
+	 * @param fn The function to that handles the event
+	 * @param useCapture 
+	 * @return boolean Status of event addition
+	 */
+	this.removeEvent = function (obj, evType, fn, useCapture){
+	  if (obj.removeEventListener){
+	    obj.removeEventListener(evType, fn, useCapture);
+	    return true;
+	  } else if (obj.detachEvent){
+	    var r = obj.detachEvent("on"+evType, fn);
+	    return r;
+	  } else {
+	    return false;
+	  }
+	}
 };
