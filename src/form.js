@@ -374,14 +374,14 @@ Fwt.form.PasswordConfirmationField.prototype = new Fwt.form.AbstractField();
 
 //	Automatically load if there are any forms on page
 if ( Fwt.dom != "undefined" ) {
-	window.onload = function () {
 		dom = new Fwt.dom();
-		var elems = document.getElementsByTagName('form');
+		dom.addEvent(window, 'load', function () {
+			var elems = document.getElementsByTagName('form');
 
-		for ( var i = 0; i < elems.length; i++ )
-		{
-			//	Sign up form for validation, this will only attach event handlers
-			dom.hasClass(elems[i], 'fwt-validate') && Fwt.form.validate( elems[i], dom );
-		}
-	}
+			for ( var i = 0; i < elems.length; i++ )
+			{
+				//	Sign up form for validation, this will only attach event handlers
+				dom.hasClass(elems[i], 'fwt-validate') && Fwt.form.validate( elems[i], dom );
+			}
+		});
 }
