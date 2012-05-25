@@ -68,7 +68,7 @@ Fwt.dom = function () {
 	 * @return void
 	 */
 	this.removeClass = function ( element, className ) {
-		element.className = element.className.replace( new RegExp("(^| )" + className + "($| )"), '' );
+		element.className = element.className.replace( new RegExp("(^| )" + className + "($| )"), ' ' );
 	};
 	
 	/**
