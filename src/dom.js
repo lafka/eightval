@@ -101,15 +101,22 @@ Fwt.dom = function () {
 	 * @return boolean Status of event addition
 	 */
 	this.addEvent = function ( obj, evType, fn, useCapture) {
-	  if (obj.addEventListener){
-	    obj.addEventListener(evType, fn, useCapture);
-	    return true;
-	  } else if (obj.attachEvent){
-	    var r = obj.attachEvent("on"+evType, fn);
-	    return r;
-	  } else {
-	    return false;
-	  }
+		if (obj.length > 1) {
+			for (i in obj)
+				this.addEvent(obj[i], evType, fn, useCapture);
+
+			return;
+		}
+
+		if (obj.addEventListener){
+			obj.addEventListener(evType, fn, useCapture);
+			return true;
+		} else if (obj.attachEvent){
+			var r = obj.attachEvent("on"+evType, fn);
+			return r;
+		} else {
+			return false;
+		}
 	};
 
 	/**
@@ -124,14 +131,27 @@ Fwt.dom = function () {
 	 * @return boolean Status of event addition
 	 */
 	this.removeEvent = function (obj, evType, fn, useCapture){
-	  if (obj.removeEventListener){
-	    obj.removeEventListener(evType, fn, useCapture);
-	    return true;
-	  } else if (obj.detachEvent){
-	    var r = obj.detachEvent("on"+evType, fn);
-	    return r;
-	  } else {
-	    return false;
-	  }
+		if (obj.length > 1) {
+			for (i in obj)
+				this.addEvent(obj[i], evType, fn, useCapture);
+			
+			return;
+		}
+
+		if (obj.removeEventListener){
+			obj.removeEventListener(evType, fn, useCapture);
+			return true;
+		} else if (obj.detachEvent){
+			var r = obj.detachEvent("on"+evType, fn);
+			return r;
+		} else {
+			return false;
+		}
+	};
+
+	this.triggerEvent = function (obj, ev, event) {
+		event = event || document.createEvent('Event');
+		event.initEvent(ev, true, true);
+		obj.dispatchEvent(event);
 	}
 };
